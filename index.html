@@ -1,107 +1,189 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | NinjaDefender</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-  </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>NinjaDefender</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+  <link rel="stylesheet" href="TemplateData/style.css" />
+</head>
+
+<body>
+  <div id="unity-container" class="unity-desktop">
+    <canvas id="unity-canvas"></canvas>
+    <img src="TemplateData/SplashScreen-bg.jpg" id="unity-background" alt="" />
+    <!-- Main Loading container -->
+    <div id="unity-loading-container">
+      <div class="unity-loading-bar">
+        <!-- Loading Text  -->
+        <p class="loading-text">Loading the game...</p>
+        <!-- Progress Bar container -->
+        <div class="progress-bar">
+          <!-- Loading background -->
+          <img class="loading-background" src="./TemplateData/Loading_BG.png" alt="" />
+          <!-- Loading progress fill image -->
+          <img class="loading-fill" src="./TemplateData/Loading_ProgressBar.png" alt="" />
+          <!-- Shine loading-gloss -->
+          <!-- <img class="loading-shine" src="./TemplateData/Loading_Shine.png" /> -->
+          <!-- Loading outline -->
+          <!-- <img class="loading-outline" src="./TemplateData/Loading_Border.png" alt="" /> -->
+          <!-- Loading icon that moves with the progress  -->
+          <!-- <img class="loading-end-icon" src="./TemplateData/Loading_Icon.png" alt="" /> -->
         </div>
       </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">NinjaDefender</div>
-      </div>
     </div>
-    <script>
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
+  </div>
+  <script>
+    const showLoadingEndIcon = true; //  - toggle this variable to show and hide progress icon
+    const progressBarHeight = '100%'; //  - progress bar height
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
-      }
-
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Build.loader.js";
-      var config = {
-        dataUrl: buildUrl + "/Build.data.gz",
-        frameworkUrl: buildUrl + "/Build.framework.js.gz",
-        codeUrl: buildUrl + "/Build.wasm.gz",
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/Build.loader.js";
+    var config = {
+      dataUrl: buildUrl + "/Build.data.gz",
+      frameworkUrl: buildUrl + "/Build.framework.js.gz",
+      codeUrl: buildUrl + "/Build.wasm.gz",
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "Fynd",
-        productName: "NinjaDefender",
-        productVersion: "1.0",
-        showBanner: unityShowBanner,
-      };
+      companyName: "Fynd",
+      productName: "NinjaDefender",
+      productVersion: "1.0",
+    };
 
-      // By default Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var unityBackground = document.querySelector("#unity-background");
+    var loadingBar = document.querySelector(".unity-loading-bar");
+    var loadingText = document.querySelector(".loading-text");
+    var unityLoadingContainer = document.querySelector("#unity-loading-container");
+    var progressBarFill = document.querySelector(".loading-fill");
+    const loadingEndIcon = document.querySelector('.loading-end-icon');
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        container.className = "unity-mobile";
-        // Avoid draining fillrate performance on mobile devices,
-        // and default/override low DPI mode on mobile browsers.
-        config.devicePixelRatio = 1;
-        unityShowBanner('WebGL builds are not supported on mobile devices.');
-      } else {
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
-      }
-      loadingBar.style.display = "block";
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      container.className = "unity-mobile";
+      // Avoid draining fillrate performance on mobile devices,
+      // and default/override low DPI mode on mobile browsers.
+      config.devicePixelRatio = 1;
+    } else {
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+    }
 
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
-        }).catch((message) => {
+    if (!showLoadingEndIcon && loadingEndIcon) loadingEndIcon.style.visibility = 'hidden';
+    if (loadingBar) loadingBar.style.display = "flex";
+    if (progressBarFill) progressBarFill.style.height = progressBarHeight;
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      // Progress update script below
+      createUnityInstance(canvas, config, (progress) => {
+        if (game_mode == 1) {
+          if (progressBarFill) progressBarFill.style.width = 100 * progress + "%";
+          if (loadingEndIcon) loadingEndIcon.style.left = "85%";
+        } else {
+          let clampedProgress = Math.min(Math.max(progress, 0), 0.9);
+          // increase width of progress image and simultaneously move loading icon to the left
+          if (progressBarFill) progressBarFill.style.width = 100 * clampedProgress + "%";
+          if (loadingEndIcon) loadingEndIcon.style.left = ((100 * clampedProgress) - 8) + "%";
+        }
+      })
+        .then((_unityInstance) => {
+          gameInstance = _unityInstance;
+        })
+        .catch((message) => {
           alert(message);
         });
-      };
-      document.body.appendChild(script);
-    </script>
-  </body>
+    };
+    document.body.appendChild(script);
+
+    let gameInstance = null;
+    let game_mode = null;
+    function SendAPIVariablesToUnity(API_Variables) {
+      console.log("Unity : Mode type " + API_Variables.match_making_data.game_mode_type);
+      game_mode = API_Variables.match_making_data.game_mode_type;
+      let _myString = JSON.stringify(API_Variables);
+
+      gameInstance.SendMessage(
+        "Bridge",
+        "Send_APIVariables_ToUnity",
+        _myString
+      );
+    }
+
+    function SendPlayerVariablesToUnity(INFO_Variables) {
+      let _myString = JSON.stringify(INFO_Variables);
+      gameInstance.SendMessage(
+        "Bridge",
+        "Send_PlayerInfoVariables_ToUnity",
+        _myString
+      );
+    }
+
+    function SendBridgeHandshakeToUnity() {
+      gameInstance.SendMessage(
+        "Bridge",
+        "OnBridgeHandshake"
+      );
+    }
+
+    function SendOpponentInfoToUnity(INFO_Variables) {
+      let _myString = JSON.stringify(INFO_Variables);
+      gameInstance.SendMessage(
+        "NetworkManager",
+        "SendOpponentInfoToUnity",
+        _myString
+      );
+    }
+
+    function UpdateLoadingMessage() {
+      if (game_mode == "multiplayer") {
+        if (loadingText) loadingText.innerText = "Waiting for other players to join";
+      }
+    }
+
+    function executePlayerConnectedToGame(name, params = {}) {
+      if (game_mode == "multiplayer") {
+        if (loadingText) loadingText.innerText = "Waiting for other players to join";
+      }
+    }
+
+    function UpdateTime(secondsPassed) {
+      gameInstance.SendMessage("NetworkManager", "ChangeTime", secondsPassed);
+    }
+
+    function AppInBackground(is_Paused) {
+      gameInstance.SendMessage("UpdateGameAudio", "ToggleSound", is_Paused);
+    }
+
+    function ClearLoadingScreen() {
+      unityBackground.style.display = "none";
+      unityLoadingContainer.style.display = "none";
+    }
+
+    function OnWebGameEvents(gameEventName, parameter) {
+      switch (gameEventName) {
+        case "SetAPIVariables":
+          SendAPIVariablesToUnity(parameter);
+          break;
+        case "SetPlayerVariables":
+          SendPlayerVariablesToUnity(parameter);
+          break;
+        case "SetBridgeHandshake":
+          SendBridgeHandshakeToUnity();
+          break;
+        case "SetOpponentInfo":
+          SendOpponentInfoToUnity(parameter);
+          break;
+        case "UpdateTime":
+          UpdateTime(parameter);
+          break;
+        case "AppInBackground":
+          AppInBackground(parameter);
+          break;
+      }
+    }
+
+  </script>
+</body>
+
 </html>
